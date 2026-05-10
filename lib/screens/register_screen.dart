@@ -15,6 +15,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
+  bool isPasswordVisible = false;
+bool isConfirmPasswordVisible = false;
+
+
   void registerUser() {
     final fullName = fullNameController.text.trim();
     final email = emailController.text.trim();
@@ -118,26 +122,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
 
                 TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock_outline),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
+  controller: passwordController,
+  obscureText: !isPasswordVisible,
+  decoration: InputDecoration(
+    labelText: 'Password',
+    prefixIcon: const Icon(Icons.lock_outline),
+    suffixIcon: IconButton(
+      icon: Icon(
+        isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+      ),
+      onPressed: () {
+        setState(() {
+          isPasswordVisible = !isPasswordVisible;
+        });
+      },
+    ),
+    border: const OutlineInputBorder(),
+  ),
+),
+
 
                 const SizedBox(height: 16),
 
                 TextField(
-                  controller: confirmPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm Password',
-                    prefixIcon: Icon(Icons.lock_outline),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
+  controller: confirmPasswordController,
+  obscureText: !isConfirmPasswordVisible,
+  decoration: InputDecoration(
+    labelText: 'Confirm Password',
+    prefixIcon: const Icon(Icons.lock_outline),
+    suffixIcon: IconButton(
+      icon: Icon(
+        isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+      ),
+      onPressed: () {
+        setState(() {
+          isConfirmPasswordVisible = !isConfirmPasswordVisible;
+        });
+      },
+    ),
+    border: const OutlineInputBorder(),
+  ),
+),
 
                 const SizedBox(height: 24),
 
