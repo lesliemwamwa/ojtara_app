@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'profile_setup_screen.dart';
+
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -40,11 +42,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Register button clicked. Firebase register will be added later.'),
-      ),
-    );
+    Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(
+    builder: (context) => const ProfileSetupScreen(),
+  ),
+);
   }
 
   @override
