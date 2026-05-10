@@ -1,25 +1,40 @@
 import 'package:flutter/material.dart';
-import 'register_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
+  final fullNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
-  void loginUser() {
+  void registerUser() {
+    final fullName = fullNameController.text.trim();
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
+    if (fullName.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please enter your email and password.'),
+          content: Text('Please fill out all fields.'),
+        ),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match.'),
         ),
       );
       return;
@@ -27,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Login button clicked. Firebase login will be added later.'),
+        content: Text('Register button clicked. Firebase register will be added later.'),
       ),
     );
   }
@@ -35,26 +50,30 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FD),
+      backgroundColor: const Color(0xFFFDF7FA),
+      appBar: AppBar(
+        title: const Text('Create Account'),
+        backgroundColor: const Color(0xFFD85B6B),
+        foregroundColor: Colors.white,
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(
-                  Icons.work_rounded,
-                  size: 80,
+                  Icons.person_add_alt_1_rounded,
+                  size: 75,
                   color: Color(0xFFD85B6B),
                 ),
 
                 const SizedBox(height: 16),
 
                 const Text(
-                  'OJTARA',
+                  'Register to OJTARA',
                   style: TextStyle(
-                    fontSize: 34,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF263238),
                   ),
@@ -63,14 +82,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 6),
 
                 const Text(
-                  'Tara, Apply Na!',
+                  'Create your student account',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     color: Colors.black54,
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 32),
+
+                TextField(
+                  controller: fullNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Full Name',
+                    prefixIcon: Icon(Icons.person_outline),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
 
                 TextField(
                   controller: emailController,
@@ -94,19 +124,31 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
+                const SizedBox(height: 16),
+
+                TextField(
+                  controller: confirmPasswordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Confirm Password',
+                    prefixIcon: Icon(Icons.lock_outline),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
                 const SizedBox(height: 24),
 
                 SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: loginUser,
+                    onPressed: registerUser,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFD85B6B),
                       foregroundColor: Colors.white,
                     ),
                     child: const Text(
-                      'Login',
+                      'Register',
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
@@ -116,14 +158,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 TextButton(
                   onPressed: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const RegisterScreen(),
-    ),
-  );
-},
-                  child: const Text("Don't have an account? Register"),
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Already have an account? Login'),
                 ),
               ],
             ),
