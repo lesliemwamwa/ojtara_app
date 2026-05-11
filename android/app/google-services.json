@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "496544565345",
+    "project_id": "ojtara-app",
+    "storage_bucket": "ojtara-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:496544565345:android:9e8713d3c10ec589ffc220",
+        "android_client_info": {
+          "package_name": "com.example.ojtara_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZEbXlwIBQEGeh8NfrofbbjlsbUDl12O4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

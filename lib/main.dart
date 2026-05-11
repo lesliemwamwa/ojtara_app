@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
- member2-job-module
-import 'screens/admin_dashboard_screen.dart';
-import 'screens/job_list_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
+import 'firebase_options.dart';
 import 'screens/login_screen.dart';
 
- main
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const OjtaraApp());
 }
 
@@ -23,11 +26,7 @@ class OjtaraApp extends StatelessWidget {
         primarySwatch: Colors.pink,
         scaffoldBackgroundColor: const Color(0xFFFDF7FA),
       ),
- member2-job-module
-      home: const JobListScreen(),
-
       home: const LoginScreen(),
-main
     );
   }
-} 
+}
