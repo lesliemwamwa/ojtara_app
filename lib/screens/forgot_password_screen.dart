@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -10,24 +11,38 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final emailController = TextEditingController();
 
-  void resetPassword() {
-    final email = emailController.text.trim();
+  final AuthService authService = AuthService();
+bool isLoading = false;
 
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your email address.'),
-        ),
-      );
-      return;
-    }
 
+  Future<void> resetPassword() async {
+  final email = emailController.text.trim();
+
+  setState(() {
+    isLoading = true;
+  });
+
+  final errorMessage = await authService.resetPassword(email: email);
+
+  if (!mounted) return;
+
+  setState(() {
+    isLoading = false;
+  });
+
+  if (errorMessage != null) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Password reset function will be added with Firebase later.'),
-      ),
+      SnackBar(content: Text(errorMessage)),
     );
+    return;
   }
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Password reset link sent. Please check your email.'),
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -90,15 +105,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: resetPassword,
+                    onPressed: isLoading ? null : resetPassword,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFD85B6B),
                       foregroundColor: Colors.white,
                     ),
-                    child: const Text(
-                      'Send Reset Link',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    child: Text(
+  isLoading ? 'Sending...' : 'Send Reset Link',
+  style: const TextStyle(fontSize: 16),
+),
                   ),
                 ),
 

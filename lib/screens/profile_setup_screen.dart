@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'job_list_screen.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -61,6 +62,13 @@ bool isLoading = false;
       content: Text('Profile saved successfully.'),
     ),
   );
+  
+  Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(
+    builder: (context) => const JobListScreen(),
+  ),
+);
 }
 
 
