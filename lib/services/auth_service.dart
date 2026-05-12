@@ -1,19 +1,11 @@
-import '../models/user_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
-  Future<String> loginUser({
-    required String email,
-    required String password,
-  }) async {
-    if (email.isEmpty || password.isEmpty) {
-      return 'Please enter your email and password.';
-    }
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-    // TODO: Connect this to Firebase Authentication.
-    return 'Login function will be connected to Firebase later.';
-  }
-
-  Future<String> registerUser({
+  Future<String?> registerUser({
     required String fullName,
     required String email,
     required String password,
@@ -30,40 +22,146 @@ class AuthService {
       return 'Passwords do not match.';
     }
 
-    // TODO: Connect this to Firebase Authentication.
-    return 'Register function will be connected to Firebase later.';
+    try {
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final uid = userCredential.user!.uid;
+
+      await _firestore.collection('users').doc(uid).set({
+        'uid': uid,
+        'fullName': fullName,
+        'email': email,
+        'school': '',
+        'course': '',
+        'yearLevel': '',
+        'skills': [],
+        'preferredLocation': '',
+        'availability': '',
+        'preferredJobType': '',
+        'role': 'student',
+        'isPremium': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return e.message ?? 'Registration failed.';
+    } catch (e) {
+      return 'Something went wrong. Please try again.';
+    }
   }
 
-  Future<String> saveStudentProfile({
-    required UserModel user,
+  Future<String?> loginUser({
+    required String email,
+    required String password,
   }) async {
-    // TODO: Save this user profile to Firestore.
-    
-    final userData = user.toMap();
+    if (email.isEmpty || password.isEmpty) {
+      return 'Please enter your email and password.';
+    }
 
-return 'Student profile data prepared with ${userData.length} fields. Firebase saving will be connected later.';
-}
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-  Future<String> resetPassword({
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return e.message ?? 'Login failed.';
+    } catch (e) {
+      return 'Something went wrong. Please try again.';
+    }
+  }
+
+  Future<String?> resetPassword({
     required String email,
   }) async {
     if (email.isEmpty) {
       return 'Please enter your email address.';
     }
 
-    // TODO: Connect this to Firebase password reset.
-    return 'Password reset will be connected to Firebase later.';
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return e.message ?? 'Password reset failed.';
+    } catch (e) {
+      return 'Something went wrong. Please try again.';
+    }
   }
 
-  Future<String> getUserRole({
-    required String uid,
+  Future<String?> saveStudentProfile({
+    required String school,
+    required String course,
+    required String yearLevel,
+    required String skills,
+    required String preferredLocation,
+    required String availability,
+    required String preferredJobType,
   }) async {
-    // TODO: Get role from Firestore.
-    // Possible roles: student or admin.
-    return 'student';
+    final currentUser = _auth.currentUser;
+
+    if (currentUser == null) {
+      return 'No logged-in user found.';
+    }
+
+    if (school.isEmpty ||
+        course.isEmpty ||
+        yearLevel.isEmpty ||
+        skills.isEmpty ||
+        preferredLocation.isEmpty ||
+        availability.isEmpty ||
+        preferredJobType.isEmpty) {
+      return 'Please complete all profile fields.';
+    }
+
+    try {
+      final skillsList = skills
+          .split(',')
+          .map((skill) => skill.trim())
+          .where((skill) => skill.isNotEmpty)
+          .toList();
+
+      await _firestore.collection('users').doc(currentUser.uid).update({
+        'school': school,
+        'course': course,
+        'yearLevel': yearLevel,
+        'skills': skillsList,
+        'preferredLocation': preferredLocation,
+        'availability': availability,
+        'preferredJobType': preferredJobType,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      return null;
+    } catch (e) {
+      return 'Failed to save profile. Please try again.';
+    }
+  }
+
+  Future<String> getCurrentUserRole() async {
+    final currentUser = _auth.currentUser;
+
+    if (currentUser == null) {
+      return 'student';
+    }
+
+    final userDoc =
+        await _firestore.collection('users').doc(currentUser.uid).get();
+
+    if (!userDoc.exists) {
+      return 'student';
+    }
+
+    final data = userDoc.data();
+
+    return data?['role'] ?? 'student';
   }
 
   Future<void> logoutUser() async {
-    // TODO: Connect this to Firebase logout.
+    await _auth.signOut();
   }
 }

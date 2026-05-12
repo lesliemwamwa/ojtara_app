@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -16,36 +17,52 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final availabilityController = TextEditingController();
   final preferredTypeController = TextEditingController();
 
-  void saveProfile() {
-    final school = schoolController.text.trim();
-    final course = courseController.text.trim();
-    final yearLevel = yearLevelController.text.trim();
-    final skills = skillsController.text.trim();
-    final location = locationController.text.trim();
-    final availability = availabilityController.text.trim();
-    final preferredType = preferredTypeController.text.trim();
+final AuthService authService = AuthService();
+bool isLoading = false;
 
-    if (school.isEmpty ||
-        course.isEmpty ||
-        yearLevel.isEmpty ||
-        skills.isEmpty ||
-        location.isEmpty ||
-        availability.isEmpty ||
-        preferredType.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please complete all profile fields.'),
-        ),
-      );
-      return;
-    }
+  Future<void> saveProfile() async {
+  final school = schoolController.text.trim();
+  final course = courseController.text.trim();
+  final yearLevel = yearLevelController.text.trim();
+  final skills = skillsController.text.trim();
+  final location = locationController.text.trim();
+  final availability = availabilityController.text.trim();
+  final preferredType = preferredTypeController.text.trim();
 
+  setState(() {
+    isLoading = true;
+  });
+
+  final errorMessage = await authService.saveStudentProfile(
+    school: school,
+    course: course,
+    yearLevel: yearLevel,
+    skills: skills,
+    preferredLocation: location,
+    availability: availability,
+    preferredJobType: preferredType,
+  );
+
+  if (!mounted) return;
+
+  setState(() {
+    isLoading = false;
+  });
+
+  if (errorMessage != null) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Profile saved. Firebase saving will be added later.'),
-      ),
+      SnackBar(content: Text(errorMessage)),
     );
+    return;
   }
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Profile saved successfully.'),
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -177,15 +194,15 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: saveProfile,
+                  onPressed: isLoading ? null : saveProfile,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD85B6B),
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text(
-                    'Save Profile',
-                    style: TextStyle(fontSize: 16),
-                  ),
+                  child: Text(
+  isLoading ? 'Saving...' : 'Save Profile',
+  style: const TextStyle(fontSize: 16),
+),
                 ),
               ),
             ],
