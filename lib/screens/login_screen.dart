@@ -6,7 +6,6 @@ import 'forgot_password_screen.dart';
 import 'job_list_screen.dart';
 import 'register_screen.dart';
 
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -18,72 +17,78 @@ class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-final AuthService authService = AuthService();
-bool isLoading = false;
+  final AuthService authService = AuthService();
 
+  bool isLoading = false;
   bool isPasswordVisible = false;
 
   Future<void> loginUser() async {
-  final email = emailController.text.trim();
-  final password = passwordController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
 
-  setState(() {
-    isLoading = true;
-  });
+    setState(() {
+      isLoading = true;
+    });
 
-  final errorMessage = await authService.loginUser(
-    email: email,
-    password: password,
-  );
+    final errorMessage = await authService.loginUser(
+      email: email,
+      password: password,
+    );
 
-  if (!mounted) return;
+    if (!mounted) return;
 
-  if (errorMessage != null) {
+    if (errorMessage != null) {
+      setState(() {
+        isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+      return;
+    }
+
+    final role = await authService.getCurrentUserRole();
+
+    if (!mounted) return;
+
     setState(() {
       isLoading = false;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(errorMessage)),
-    );
-    return;
+    if (role == 'admin') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AdminDashboardScreen(),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const JobListScreen(),
+        ),
+      );
+    }
   }
 
-  final role = await authService.getCurrentUserRole();
-
-  if (!mounted) return;
-
-  setState(() {
-    isLoading = false;
-  });
-
-  if (role == 'admin') {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const AdminDashboardScreen(),
-      ),
-    );
-  } else {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const JobListScreen(),
-      ),
-    );
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FD),
+      backgroundColor: const Color(0xFFFDF7FA),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(
                   Icons.work_rounded,
@@ -91,7 +96,7 @@ bool isLoading = false;
                   color: Color(0xFFD85B6B),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
                 const Text(
                   'OJTARA',
@@ -102,7 +107,7 @@ bool isLoading = false;
                   ),
                 ),
 
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
 
                 const Text(
                   'Tara, Apply Na!',
@@ -127,40 +132,41 @@ bool isLoading = false;
                 const SizedBox(height: 16),
 
                 TextField(
-  controller: passwordController,
-  obscureText: !isPasswordVisible,
-  decoration: InputDecoration(
-    labelText: 'Password',
-    prefixIcon: const Icon(Icons.lock_outline),
-    suffixIcon: IconButton(
-      icon: Icon(
-        isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-      ),
-      onPressed: () {
-        setState(() {
-          isPasswordVisible = !isPasswordVisible;
-        });
-      },
-    ),
-    border: const OutlineInputBorder(),
-  ),
-),
+                  controller: passwordController,
+                  obscureText: !isPasswordVisible,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isPasswordVisible = !isPasswordVisible;
+                        });
+                      },
+                    ),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
 
-Align(
-  alignment: Alignment.centerRight,
-  child: TextButton(
-    onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const ForgotPasswordScreen(),
-        ),
-      );
-    },
-    child: const Text('Forgot Password?'),
-  ),
-),
-
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ForgotPasswordScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text('Forgot Password?'),
+                  ),
+                ),
 
                 const SizedBox(height: 24),
 
@@ -174,9 +180,9 @@ Align(
                       foregroundColor: Colors.white,
                     ),
                     child: Text(
-  isLoading ? 'Logging in...' : 'Login',
-  style: const TextStyle(fontSize: 16),
-),
+                      isLoading ? 'Logging in...' : 'Login',
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ),
                 ),
 
@@ -184,13 +190,13 @@ Align(
 
                 TextButton(
                   onPressed: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const RegisterScreen(),
-    ),
-  );
-},
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RegisterScreen(),
+                      ),
+                    );
+                  },
                   child: const Text("Don't have an account? Register"),
                 ),
               ],
