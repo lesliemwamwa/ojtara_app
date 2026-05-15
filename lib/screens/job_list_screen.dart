@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/job_model.dart';
 import '../widgets/job_card.dart';
 import 'job_details_screen.dart';
+import 'premium_features_screen.dart';
 
 class JobListScreen extends StatefulWidget {
   const JobListScreen({super.key});
@@ -39,13 +40,12 @@ class _JobListScreenState extends State<JobListScreen> {
     List<JobModel> filteredJobs = jobs.where((job) {
       final matchesSearch =
           job.title.toLowerCase().contains(searchText.toLowerCase()) ||
-              job.company.toLowerCase().contains(searchText.toLowerCase());
+          job.company.toLowerCase().contains(searchText.toLowerCase());
 
       final matchesLocation =
           selectedLocation == "All" || job.location == selectedLocation;
 
-      final matchesType =
-          selectedType == "All" || job.type == selectedType;
+      final matchesType = selectedType == "All" || job.type == selectedType;
 
       return matchesSearch && matchesLocation && matchesType;
     }).toList();
@@ -56,6 +56,30 @@ class _JobListScreenState extends State<JobListScreen> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.pinkAccent,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PremiumFeaturesScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.workspace_premium),
+                label: const Text('Upgrade to Premium'),
+              ),
+            ),
+          ),
+
           // SEARCH
           Padding(
             padding: const EdgeInsets.all(10),
@@ -83,11 +107,17 @@ class _JobListScreenState extends State<JobListScreen> {
                     isExpanded: true,
                     items: const [
                       DropdownMenuItem(
-                          value: "All", child: Text("All Locations")),
+                        value: "All",
+                        child: Text("All Locations"),
+                      ),
                       DropdownMenuItem(
-                          value: "Remote", child: Text("Remote")),
+                        value: "Remote",
+                        child: Text("Remote"),
+                      ),
                       DropdownMenuItem(
-                          value: "Cagayan de Oro", child: Text("CDO")),
+                        value: "Cagayan de Oro",
+                        child: Text("CDO"),
+                      ),
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -103,11 +133,17 @@ class _JobListScreenState extends State<JobListScreen> {
                     isExpanded: true,
                     items: const [
                       DropdownMenuItem(
-                          value: "All", child: Text("All Types")),
+                        value: "All",
+                        child: Text("All Types"),
+                      ),
                       DropdownMenuItem(
-                          value: "Full-time", child: Text("Full-time")),
+                        value: "Full-time",
+                        child: Text("Full-time"),
+                      ),
                       DropdownMenuItem(
-                          value: "Part-time", child: Text("Part-time")),
+                        value: "Part-time",
+                        child: Text("Part-time"),
+                      ),
                     ],
                     onChanged: (value) {
                       setState(() {

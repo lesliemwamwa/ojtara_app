@@ -5,6 +5,7 @@ import 'manage_jobs_screen.dart';
 import 'saved_jobs_screen.dart';
 import 'application_tracker_screen.dart';
 import 'notification_screen.dart';
+import 'revenue_model_screen.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
@@ -91,6 +92,12 @@ class AdminDashboardScreen extends StatelessWidget {
               title: 'Notifications',
               icon: Icons.notifications,
               screen: const NotificationScreen(),
+            ),
+            dashboardCard(
+              context,
+              title: 'Revenue Model',
+              icon: Icons.attach_money,
+              screen: const RevenueModelScreen(),
             ),
           ],
         ),
